@@ -11,7 +11,7 @@ import (
 )
 
 func GetDB() (*mongo.Client, error) {
-	db, err := mongo.NewClient(options.Client().ApplyURI("mongodb://admin:admin123@localhost:27017/admin"))
+	db, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("MONGO_URI")))
 	if err != nil {
 		return nil, err
 	}

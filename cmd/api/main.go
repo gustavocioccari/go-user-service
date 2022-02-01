@@ -9,13 +9,22 @@ import (
 	"github.com/gustavocioccari/go-user-microservice/repositories/mongodb/user"
 	userService "github.com/gustavocioccari/go-user-microservice/service/user"
 	"github.com/gustavocioccari/go-user-microservice/ui/rest/router"
+	"github.com/joho/godotenv"
 )
+
+func init() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+}
 
 func main() {
 	db, err := mongodb.GetDB()
 	if err != nil {
 		log.Println(err)
 	}
+
 	userRepository := user.NewUserRepository(db)
 	userService := userService.NewUserService(userRepository)
 
