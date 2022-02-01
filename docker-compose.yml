@@ -1,0 +1,36 @@
+version: '3'
+services:
+  app:
+    container_name: user-service
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports: 
+      - $PORT:$PORT 
+    volumes:
+      - api:/usr/src/app/bin/main/cmd/api
+    depends_on:
+      - mongodb
+    networks:
+      - user-network
+
+  mongodb:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    networks:
+      - user-network
+    volumes:
+      - mongodb:/data/db
+      - mongodb:/data/configdb
+    ports:
+      - "27017:27017"
+
+volumes:
+  api:
+  mongodb:   
+
+networks:
+  user-network:
+    driver: bridge
