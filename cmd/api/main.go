@@ -1,15 +1,27 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/gustavocioccari/go-user-microservice/repositories/mongodb"
+	"github.com/gustavocioccari/go-user-microservice/repositories/mongodb/user"
+	userService "github.com/gustavocioccari/go-user-microservice/service/user"
+	"github.com/gustavocioccari/go-user-microservice/ui/rest/router"
+)
 
 func main() {
-	r := gin.Default()
+	db, err := mongodb.GetDB()
+	if err != nil {
+		log.Println(err)
+	}
+	userRepository := user.NewUserRepository(db)
+	userService := userService.NewUserService(userRepository)
 
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "Server is up",
-		})
-	})
+	router := router.SetupRouter(userService)
 
-	r.Run(":3000")
+	if err := router.Start(fmt.Sprintf(":%s", os.Getenv("PORT"))); err != nil {
+		log.Fatalln("Error on start rest:", err)
+	}
 }
