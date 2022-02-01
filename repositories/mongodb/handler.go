@@ -20,10 +20,10 @@ func GetDB() (*mongo.Client, error) {
 		log.Fatal(err)
 	}
 
-	log.Println(db.Database(os.Getenv("DATABASE")).Collection("users").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
+	db.Database(os.Getenv("DATABASE")).Collection("users").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
 		Keys:    bson.M{"email": 1},
 		Options: options.Index().SetUnique(true).SetName("email"),
-	}))
+	})
 
 	return db, nil
 }
