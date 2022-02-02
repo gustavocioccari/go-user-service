@@ -5,12 +5,14 @@ import (
 
 	"github.com/gustavocioccari/go-user-microservice/models"
 	"github.com/gustavocioccari/go-user-microservice/repositories/mongodb/user"
+	"github.com/gustavocioccari/go-user-microservice/service/kafka"
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type service struct {
 	userRepository user.UserRepository
+	kafkaService   kafka.KafkaService
 }
 
 type UserService interface {
@@ -19,9 +21,11 @@ type UserService interface {
 
 func NewUserService(
 	userRepository user.UserRepository,
+	kafkaService kafka.KafkaService,
 ) UserService {
 	return &service{
 		userRepository: userRepository,
+		kafkaService:   kafkaService,
 	}
 }
 
@@ -47,6 +51,12 @@ func (s *service) Create(user *models.User) (*models.User, error) {
 	}
 
 	userCreated.Password = ""
+
+	kafkaMessage := models.KafkaMessage{
+		Message: "User successfully created!",
+	}
+
+	s.kafkaService.Producer("users", kafkaMessage)
 
 	return userCreated, nil
 }

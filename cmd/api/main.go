@@ -7,6 +7,7 @@ import (
 
 	"github.com/gustavocioccari/go-user-microservice/repositories/mongodb"
 	"github.com/gustavocioccari/go-user-microservice/repositories/mongodb/user"
+	"github.com/gustavocioccari/go-user-microservice/service/kafka"
 	userService "github.com/gustavocioccari/go-user-microservice/service/user"
 	"github.com/gustavocioccari/go-user-microservice/ui/rest/router"
 	"github.com/joho/godotenv"
@@ -26,7 +27,8 @@ func main() {
 	}
 
 	userRepository := user.NewUserRepository(db)
-	userService := userService.NewUserService(userRepository)
+	kafkaService := kafka.NewKafkaService()
+	userService := userService.NewUserService(userRepository, kafkaService)
 
 	router := router.SetupRouter(userService)
 
