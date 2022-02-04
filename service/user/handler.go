@@ -52,11 +52,7 @@ func (s *service) Create(user *models.User) (*models.User, error) {
 
 	userCreated.Password = ""
 
-	kafkaMessage := models.KafkaMessage{
-		Message: "User successfully created!",
-	}
-
-	s.kafkaService.Producer("users", kafkaMessage)
+	s.kafkaService.Producer("new-user", userCreated)
 
 	return userCreated, nil
 }

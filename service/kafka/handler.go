@@ -6,21 +6,20 @@ import (
 	"log"
 	"os"
 
-	"github.com/gustavocioccari/go-user-microservice/models"
 	"github.com/segmentio/kafka-go"
 )
 
 type service struct{}
 
 type KafkaService interface {
-	Producer(topic string, message models.KafkaMessage)
+	Producer(topic string, message interface{})
 }
 
 func NewKafkaService() KafkaService {
 	return &service{}
 }
 
-func (s *service) Producer(topic string, message models.KafkaMessage) {
+func (s *service) Producer(topic string, message interface{}) {
 	writer := &kafka.Writer{
 		Addr:  kafka.TCP(os.Getenv("KAFKA_BROKER_ADDRESS")),
 		Topic: topic,
